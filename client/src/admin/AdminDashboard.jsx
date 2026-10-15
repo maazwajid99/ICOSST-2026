@@ -99,23 +99,9 @@ export function AdminDashboard() {
   const fetchDashboardData = async () => {
     setLoading(true);
     try {
-      const [logsRes, regRes] = await Promise.all([
-        api.get('/audit?limit=6').catch(() => ({ data: null })),
-        api.get('/registrations/admin/all?limit=1').catch(() => ({ data: null })),
-      ]);
-
+      const logsRes = await api.get('/audit?limit=6');
       if (logsRes.data?.data) {
         setAuditLogs(logsRes.data.data);
-      }
-
-      if (regRes.data?.data?.metrics) {
-        const m = regRes.data.data.metrics;
-        setKpis((prev) => ({
-          ...prev,
-          confirmedRegistrations: m.approved,
-          pendingPayments: m.paymentSubmitted,
-          sampleRevenue: `PKR ${m.totalRevenue?.toLocaleString() || '0'}`,
-        }));
       }
     } catch {
       // fallback
